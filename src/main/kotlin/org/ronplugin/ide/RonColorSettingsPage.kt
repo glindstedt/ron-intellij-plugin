@@ -10,14 +10,7 @@ import javax.swing.Icon
 
 class RonColorSettingsPage : ColorSettingsPage {
     companion object {
-        private val DESCRIPTORS = arrayOf(
-            AttributesDescriptor("Identifier", RonSyntaxHighlighter.IDENTIFIER),
-            AttributesDescriptor("String", RonSyntaxHighlighter.STRING),
-            AttributesDescriptor("Number", RonSyntaxHighlighter.NUMBER),
-            AttributesDescriptor("Extension", RonSyntaxHighlighter.EXTENSION),
-            AttributesDescriptor("Block Comment", RonSyntaxHighlighter.BLOCK_COMMENT),
-            AttributesDescriptor("Line Comment", RonSyntaxHighlighter.LINE_COMMENT)
-        )
+        private val DESCRIPTORS = RonColor.values().map { it.attributesDescriptor }.toTypedArray()
     }
 
     override fun getHighlighter(): SyntaxHighlighter = RonSyntaxHighlighter()
