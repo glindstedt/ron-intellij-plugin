@@ -1,0 +1,24 @@
+<idea-plugin>
+    <id>org.ronplugin</id>
+    <name>Rusty Object Notation</name>
+    <vendor>RonPlugin</vendor>
+
+    <description><![CDATA[
+    Basic support for RON (Rusty Object Notation) files.
+    ]]></description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="Ron file" implementationClass="org.ronplugin.RonFileType" fieldName="INSTANCE" language="Ron" extensions="ron" />
+        <lang.parserDefinition language="Ron" implementationClass="org.ronplugin.RonParserDefinition" />
+        <lang.syntaxHighlighterFactory language="Ron" implementationClass="org.ronplugin.ide.RonSyntaxHighlighterFactory" />
+        <colorSettingsPage implementation="org.ronplugin.ide.RonColorSettingsPage" />
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>

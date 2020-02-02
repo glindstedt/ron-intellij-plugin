@@ -1,0 +1,90 @@
+{
+  parserClass="org.ronplugin.parser.RonParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Ron"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.ronplugin.psi"
+  psiImplPackage="org.ronplugin.psi.impl"
+
+  elementTypeHolderClass="org.ronplugin.psi.RonTypes"
+  elementTypeClass="org.ronplugin.psi.RonElementType"
+  tokenTypeClass="org.ronplugin.psi.RonTokenType"
+
+  // Mostly useful for PSI live preview
+  tokens=[
+    COMMA=','
+    UNDERSCORE='_'
+    LP='('
+    RP=')'
+    COL=':'
+    LSB='['
+    RSB=']'
+    SOME="Some"
+    NONE="None"
+
+    ID              = 'regexp:[_a-zA-Z][_a-zA-Z0-9]*'
+    WHITE_SPACE     = 'regexp:\s+'
+    INTEGER_LITERAL = 'regexp:[0-9]+]'
+    STRING_LITERAL  = "regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
+    LINE_COMMENT    = 'regexp://.*'
+    BLOCK_COMMENT   = 'regexp:/\*[^*]*\*/'
+    EXTENSION       = "regexp:#!\[.*\]"
+  ]
+}
+
+ronFile ::= [comment] (EXTENSION)* value
+
+comment ::= BLOCK_COMMENT | (LINE_COMMENT)+
+
+private value ::= [comment]
+                  ( unsigned
+                  | signed
+                  | unsigned_float
+                  | signed_float
+                  | string
+                  | char
+                  | bool
+                  | option
+                  | list
+                  | map
+                  | tuple
+                  | struct
+                  | enum_variant )
+                  [comment]
+
+ident ::= ID
+
+bool ::= TRUE | FALSE
+
+option ::= NONE | SOME LP value RP
+
+unsigned       ::= INTEGER_LITERAL
+signed         ::= [PLUS | MINUS] unsigned
+unsigned_float ::= FLOAT_LITERAL
+signed_float   ::= [PLUS | MINUS] unsigned_float
+
+char   ::= CHAR_LITERAL
+string ::= STRING_LITERAL
+
+private value_list ::= [value (COMMA value)* [COMMA]]
+
+list ::= LSB value_list RSB
+tuple ::= LP value_list RP
+
+map       ::= LCB [map_entry (COMMA map_entry)* [COMMA] [comment]] RCB
+map_entry ::= value COL value
+
+
+named_field         ::= [comment] ident COL value
+
+struct              ::= ident (struct_body)? | struct_body
+
+private struct_body ::= tuple_struct | named_struct | unit_struct
+unit_struct         ::= LP RP
+inner tuple_struct  ::= tuple
+named_struct        ::= LP [named_field (COMMA named_field)* [COMMA] [comment]] RP
+
+// TODO differentiating between named struct and enum variant with named fields?
+enum_variant ::= ident (tuple | named_struct)?
